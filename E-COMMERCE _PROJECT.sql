@@ -34,12 +34,12 @@ alter table sale_margin add foreign key (Prod_id) references prod_dimen(Prod_id)
 
 --1. Question ****************************************************************
 
---Using the columns of “market_fact”, “cust_dimen”, “orders_dimen”,
---“prod_dimen”, “shipping_dimen”, Create a new table, named as
---“combined_table”. 
+--Using the columns of â€œmarket_factâ€, â€œcust_dimenâ€, â€œorders_dimenâ€,
+--â€œprod_dimenâ€, â€œshipping_dimenâ€, Create a new table, named as
+--â€œcombined_tableâ€. 
 
 
---- Product margin= (selling price – cost of product) / selling price.
+--- Product margin= (selling price â€“ cost of product) / selling price.
 
 select mf.*,cd.Customer_Name,cd.Customer_Segment,cd.Province,
 	   cd.Region,sd.Order_ID,sd.Ship_Date,sd.Ship_Mode,
@@ -61,7 +61,7 @@ select * from combined_table
 
 --2.Question *******************************************
 
---Maksimum sipariş sayısına sahip ilk 3 müşteriyi bulun.
+--Maksimum sipariÃ¾ sayÃ½sÃ½na sahip ilk 3 mÃ¼Ã¾teriyi bulun.
 
 
 select top 3 Cust_id, count(distinct Ord_id) Max_Count_Of_Orders
@@ -73,9 +73,9 @@ order by 2 desc
 
 --3. Question *************************************************
 
---Kombine_tabloda, Sipariş_Tarihi ve Sevk_Tarihi
---arasındaki tarih farkını içeren DaysTakenForDelivery
---olarak yeni bir sütun oluşturun.
+--Kombine_tabloda, SipariÃ¾_Tarihi ve Sevk_Tarihi
+--arasÃ½ndaki tarih farkÃ½nÃ½ iÃ§eren DaysTakenForDelivery
+--olarak yeni bir sÃ¼tun oluÃ¾turun.
 
 ALTER TABLE combined_table
 ADD DaysTakenForDelivery int
@@ -119,7 +119,7 @@ FROM combined_table
 
 
 --Find the customer whose order took the maximum time to get delivered.
---Siparişinin teslim edilmesi için maksimum süreyi alan müşteriyi bulun.
+--SipariÃ¾inin teslim edilmesi iÃ§in maksimum sÃ¼reyi alan mÃ¼Ã¾teriyi bulun.
 
 select top 1 Cust_id,Customer_Name,DaysTakenForDelivery
 from combined_table01
@@ -130,14 +130,14 @@ order by DaysTakenForDelivery desc
 --Count the total number of unique customers in January and how many of them
 --came back every month over the entire year in 2011
 
---Ocak ayındaki toplam benzersiz müşteri sayısını ve 2011'de tüm yıl 
---boyunca her ay kaç tanesinin geri geldiğini sayın.
+--Ocak ayÃ½ndaki toplam benzersiz mÃ¼Ã¾teri sayÃ½sÃ½nÃ½ ve 2011'de tÃ¼m yÃ½l 
+--boyunca her ay kaÃ§ tanesinin geri geldiÃ°ini sayÃ½n.
 
 select count(distinct Cust_id)
 from combined_table01
 where order_date between '2011-01-01' and '2011-01-31' 
 
---Yukarıda, January içerisindeki sipariş veren müşteri sayısını unique olarak getirdim.
+--YukarÃ½da, January iÃ§erisindeki sipariÃ¾ veren mÃ¼Ã¾teri sayÃ½sÃ½nÃ½ unique olarak getirdim.
 
 
 select distinct Cust_id
@@ -145,28 +145,28 @@ into JanCust
 from  combined_table01
 where order_date between '2011-01-01' and '2011-01-31' 
 
---yukarıda ilk çıktıyı bir tabloya dönüştürdüm
+--yukarÃ½da ilk Ã§Ã½ktÃ½yÃ½ bir tabloya dÃ¶nÃ¼Ã¾tÃ¼rdÃ¼m
 
 select distinct month(CT.Order_Date) as ByMonth ,year(CT.Order_Date) as ByYear,
 			count(CT.cust_id) over (partition by month(CT.Order_Date)) as CustByMonths
 from combined_table01 CT,JanCust JC
 where JC.Cust_id=CT.Cust_id and Order_Date between '2011-02-01' and '2011-12-31'
 
---Yukarıda, ocak ayında sipariş veren müşterilerin 2011 in diğer aylarındaki sipariş durumu(aylara göre ayrı ayrı)
+--YukarÃ½da, ocak ayÃ½nda sipariÃ¾ veren mÃ¼Ã¾terilerin 2011 in diÃ°er aylarÃ½ndaki sipariÃ¾ durumu(aylara gÃ¶re ayrÃ½ ayrÃ½)
 
 --6. Question--***********************************************
 
 --Write a query to return for each user the time elapsed between the first
 --purchasing and the third purchasing, in ascending order by Customer ID.
 
---Her kullanıcı için ilk satın alma ile üçüncü satın alma arasında geçen süreyi Müşteri Kimliğine göre artan sırada döndürmek için bir sorgu yazın.
+--Her kullanÃ½cÃ½ iÃ§in ilk satÃ½n alma ile Ã¼Ã§Ã¼ncÃ¼ satÃ½n alma arasÃ½nda geÃ§en sÃ¼reyi MÃ¼Ã¾teri KimliÃ°ine gÃ¶re artan sÃ½rada dÃ¶ndÃ¼rmek iÃ§in bir sorgu yazÃ½n.
 
 create view ByDate_Tablo as
 select distinct Order_Date,Customer_Name, dense_rank() over (partition by Customer_Name order by Customer_Name,Order_Date) ByDate
 from combined_table01
 order by Customer_Name
 
---Yukarıda, sipariş tarihleri unique olacak şekilde, her müşterinin siparişlerini kendi içinde sipariş tarihine göre derecelendirdim. 
+--YukarÃ½da, sipariÃ¾ tarihleri unique olacak Ã¾ekilde, her mÃ¼Ã¾terinin sipariÃ¾lerini kendi iÃ§inde sipariÃ¾ tarihine gÃ¶re derecelendirdim. 
 
 
 create view FirstOrder as
@@ -176,7 +176,7 @@ where ByDate like 1
 
 order by Customer_Name
 
---Yukarıda, müşterilerin "birinci" siparişlerini içeren tabloyu view yaptım.
+--YukarÃ½da, mÃ¼Ã¾terilerin "birinci" sipariÃ¾lerini iÃ§eren tabloyu view yaptÃ½m.
 
 create view ThirdOrder as
 select ByDate,Customer_Name,Order_Date
@@ -186,7 +186,7 @@ where ByDate like 3
 order by Customer_Name
 
 
---Yukarıda, müşterilerin "üçüncü" siparişlerini içeren tabloyu view yaptım.
+--YukarÃ½da, mÃ¼Ã¾terilerin "Ã¼Ã§Ã¼ncÃ¼" sipariÃ¾lerini iÃ§eren tabloyu view yaptÃ½m.
 
 
 select F_O.Customer_Name,DATEDIFF(day,F_O.Order_Date,T_O.Order_Date) Order_Time_Difference
@@ -194,8 +194,8 @@ from FirstOrder F_O, ThirdOrder T_O
 where F_O.Customer_Name=T_O.Customer_Name
 order by Order_Time_Difference
 
---Yukarıda create view yaptığım sütunlardan customer_name'leri birebir eşleşecek şekilde üçüncü ve birinci siparişlerin tarihlerinin farkını gün olarak aldım 
---NOT: bazı kişilerin üçüncü siparişi yok
+--YukarÃ½da create view yaptÃ½Ã°Ã½m sÃ¼tunlardan customer_name'leri birebir eÃ¾leÃ¾ecek Ã¾ekilde Ã¼Ã§Ã¼ncÃ¼ ve birinci sipariÃ¾lerin tarihlerinin farkÃ½nÃ½ gÃ¼n olarak aldÃ½m 
+--NOT: bazÃ½ kiÃ¾ilerin Ã¼Ã§Ã¼ncÃ¼ sipariÃ¾i yok
 
 
 --7. Question--***************************
@@ -204,8 +204,8 @@ order by Order_Time_Difference
 --product 14, as well as the ratio of these products to the total number of
 --products purchased by the customer.
 
---Hem 11. ürünü hem de 14. ürünü satın alan müşterileri ve bu ürünlerin müşteri tarafından satın alınan
---toplam ürün sayısına oranını veren bir sorgu yazın.
+--Hem 11. Ã¼rÃ¼nÃ¼ hem de 14. Ã¼rÃ¼nÃ¼ satÃ½n alan mÃ¼Ã¾terileri ve bu Ã¼rÃ¼nlerin mÃ¼Ã¾teri tarafÃ½ndan satÃ½n alÃ½nan
+--toplam Ã¼rÃ¼n sayÃ½sÃ½na oranÃ½nÃ½ veren bir sorgu yazÃ½n.
 
 create view Prod11 as
 select Customer_Name,Prod_id
@@ -214,7 +214,7 @@ where Prod_id like 11
 
 order by Customer_Name
 
---Yukarıda Prod_id 'si 11 olan "Customer" ları getirdim.
+--YukarÃ½da Prod_id 'si 11 olan "Customer" larÃ½ getirdim.
 
 
 create view Prod14 as
@@ -224,14 +224,14 @@ where Prod_id like 14
 
 order by Customer_Name
 
---Yukarıda Prod_id ' si 14 olan "Customer" ları getirdim.
+--YukarÃ½da Prod_id ' si 14 olan "Customer" larÃ½ getirdim.
 
 
 select P11.Customer_Name,P11.Prod_id,P14.Prod_id
 from Prod11 P11,Prod14 P14
 where P11.Customer_Name = P14.Customer_Name
 
---Yukarıda prod_id 'si hem 11 hemde 14 olan ürünleri satın alan "Customer" ları getirdim.
+--YukarÃ½da prod_id 'si hem 11 hemde 14 olan Ã¼rÃ¼nleri satÃ½n alan "Customer" larÃ½ getirdim.
 
 
 create view Names1114 as
@@ -239,7 +239,7 @@ select P11.Customer_Name
 from Prod11 P11,Prod14 P14
 where P11.Customer_Name = P14.Customer_Name
 
---Yukarıda, prod_id si 11 ve 14 olanların isimlerini aldım.
+--YukarÃ½da, prod_id si 11 ve 14 olanlarÃ½n isimlerini aldÃ½m.
 
 create view amount_of_11_14 as
 select distinct N.Customer_Name, sum(CT.Order_Quantity) over (partition by N.Customer_Name) Count_by_Name_11_14
@@ -248,7 +248,7 @@ where N.Customer_Name = CT.Customer_Name and CT.Prod_id in (11,14)
 
 order by 1
 
---yukarıda, isimlerini aldığım kişilerin 11,14 nolu ürünlerinin toplam sayısını gruplandırarak getirdim.
+--yukarÃ½da, isimlerini aldÃ½Ã°Ã½m kiÃ¾ilerin 11,14 nolu Ã¼rÃ¼nlerinin toplam sayÃ½sÃ½nÃ½ gruplandÃ½rarak getirdim.
 
 
 
@@ -259,14 +259,14 @@ where N.Customer_Name=CT.Customer_Name
 
 order by N.Customer_Name
 
---Yukarıda, 11 ve 14 nolu ürünleri alanların bütün alışverişleri
+--YukarÃ½da, 11 ve 14 nolu Ã¼rÃ¼nleri alanlarÃ½n bÃ¼tÃ¼n alÃ½Ã¾veriÃ¾leri
 
 select A.Customer_Name, (A.Count_by_Name_11_14*1.0) /(B.Count_by_Name_total*1.0)*100 ratio
 from amount_of_11_14 A, amount_of_all B
 where A.Customer_Name=B.Customer_Name
 order by 1
 
---Yukarıda 11. ve 14. nolu ürünleri aynı anda alan kişilerin, aldığı bütün ürünlere yüzdelik oranını buldum
+--YukarÃ½da 11. ve 14. nolu Ã¼rÃ¼nleri aynÃ½ anda alan kiÃ¾ilerin, aldÃ½Ã°Ã½ bÃ¼tÃ¼n Ã¼rÃ¼nlere yÃ¼zdelik oranÃ½nÃ½ buldum
 
 
 --******************************Part 2**************************************
@@ -277,11 +277,11 @@ order by 1
 
 --1.Question*******************************
 
--- Create a “view” that keeps visit logs of customers on a monthly basis. (For
+-- Create a â€œviewâ€ that keeps visit logs of customers on a monthly basis. (For
 -- each log, three field is kept: Cust_id, Year, Month)
 
---Müşterilerin ziyaret günlüklerini aylık olarak tutan bir "görünüm" oluşturun. (İçin
---her günlük, üç alan tutulur: Cust_id, Year, Month)
+--MÃ¼Ã¾terilerin ziyaret gÃ¼nlÃ¼klerini aylÃ½k olarak tutan bir "gÃ¶rÃ¼nÃ¼m" oluÃ¾turun. (ÃÃ§in
+--her gÃ¼nlÃ¼k, Ã¼Ã§ alan tutulur: Cust_id, Year, Month)
  
 create view By_Order_Date as
 select Cust_id,year(Order_Date) Order_Year,month(Order_Date) Order_Month
@@ -292,11 +292,11 @@ order by 1,2,3
 
 --2.Question*********************************
 
---Create a “view” that keeps the number of monthly visits by users. (Show
+--Create a â€œviewâ€ that keeps the number of monthly visits by users. (Show
 --separately all months from the beginning business)
 
---Kullanıcıların aylık ziyaretlerinin sayısını tutan bir "görünüm" oluşturun. (Göstermek
---işin başlangıcından itibaren tüm aylar ayrı ayrı)
+--KullanÃ½cÃ½larÃ½n aylÃ½k ziyaretlerinin sayÃ½sÃ½nÃ½ tutan bir "gÃ¶rÃ¼nÃ¼m" oluÃ¾turun. (GÃ¶stermek
+--iÃ¾in baÃ¾langÃ½cÃ½ndan itibaren tÃ¼m aylar ayrÃ½ ayrÃ½)
 
 
 select distinct Cust_id,year(Order_Date) Order_Year,month(Order_Date) Order_Month,
@@ -307,7 +307,7 @@ order by 1,2,3
 --3.Question****************************************
 
 --For each visit of customers, create the next month of the visit as a separate column.
---Müşterilerin her ziyareti için, ziyaretin bir sonraki ayını ayrı bir sütun olarak oluşturun.
+--MÃ¼Ã¾terilerin her ziyareti iÃ§in, ziyaretin bir sonraki ayÃ½nÃ½ ayrÃ½ bir sÃ¼tun olarak oluÃ¾turun.
 
 create view DistOrder as
 select distinct Order_Date, Cust_id
@@ -342,7 +342,7 @@ from AboutNextVisit
 
 --Calculate the monthly time gap between two consecutive visits by each customer.
 
---Her müşterinin birbirini takip eden iki ziyareti arasındaki aylık zaman aralığını hesaplayın.
+--Her mÃ¼Ã¾terinin birbirini takip eden iki ziyareti arasÃ½ndaki aylÃ½k zaman aralÃ½Ã°Ã½nÃ½ hesaplayÃ½n.
 
 create view DistOrder as
 select distinct Order_Date, Cust_id
@@ -364,11 +364,11 @@ from NextVisit
 --months since they made their first purchase.
 --o Labeled as regular if the customer has made a purchase every month.
 
---5. Ortalama zaman boşluklarını kullanarak müşterileri kategorilere ayırın. Size en uygun etiketleme modelini seçin.
---Örneğin:
---o Müşteri şu anda başka bir satın alma işlemi yapmadıysa, kayıp olarak etiketlenir.
---İlk satın almalarını yaptıklarından bu yana aylar geçti.
---o Müşteri her ay alışveriş yaptıysa, düzenli olarak etiketlenir.
+--5. Ortalama zaman boÃ¾luklarÃ½nÃ½ kullanarak mÃ¼Ã¾terileri kategorilere ayÃ½rÃ½n. Size en uygun etiketleme modelini seÃ§in.
+--Ã–rneÃ°in:
+--o MÃ¼Ã¾teri Ã¾u anda baÃ¾ka bir satÃ½n alma iÃ¾lemi yapmadÃ½ysa, kayÃ½p olarak etiketlenir.
+--Ãlk satÃ½n almalarÃ½nÃ½ yaptÃ½klarÃ½ndan bu yana aylar geÃ§ti.
+--o MÃ¼Ã¾teri her ay alÃ½Ã¾veriÃ¾ yaptÃ½ysa, dÃ¼zenli olarak etiketlenir.
 --Vb.
 
 
@@ -433,23 +433,23 @@ from NextMonthCust
 
 
 create view SameCustInNextMounth as
-select  distinct Year_Wise,Month_Wise,count(*) over (partition by Year_Wise,Month_Wise) Same_Cust_İn_Next_Mounth
+select  distinct Year_Wise,Month_Wise,count(*) over (partition by Year_Wise,Month_Wise) Same_Cust_Ãn_Next_Mounth
 from NextMonthCust
 where Next_Month_Cust is not null
 
 order by 1
 
---Yukarıda, bir sonraki ayda tekrar alışveriş yapanların toplam sayısını buldum(ay bazında).ve view'ledim
+--YukarÃ½da, bir sonraki ayda tekrar alÃ½Ã¾veriÃ¾ yapanlarÃ½n toplam sayÃ½sÃ½nÃ½ buldum(ay bazÃ½nda).ve view'ledim
 
 create view NumberofCustByMonth as
 select distinct year(Order_Date) Order_Year, month(Order_Date) Order_Month,count(*) over (partition by year(Order_Date),month(Order_Date)) Number_of_Cust_By_Month
 from combined_table01
 
 order by 1,2
---Yukarıda, Bütün alışverişleri aylara göre getirdim.
+--YukarÃ½da, BÃ¼tÃ¼n alÃ½Ã¾veriÃ¾leri aylara gÃ¶re getirdim.
 
 create view RetentionCustRate as
-select SC.Year_Wise,SC.Month_Wise,(SC.Same_Cust_İn_Next_Mounth*1.0 /NC.Number_of_Cust_By_Month)*100 Retention_Cust_Rate
+select SC.Year_Wise,SC.Month_Wise,(SC.Same_Cust_Ãn_Next_Mounth*1.0 /NC.Number_of_Cust_By_Month)*100 Retention_Cust_Rate
 from NumberofCustByMonth NC,SameCustInNextMounth SC
 where NC.Order_Month=SC.Month_Wise and NC.Order_Year=SC.Year_Wise
 
@@ -459,4 +459,4 @@ select Year_Wise,Month_Wise,format(Retention_Cust_Rate,'N2') RetentionCustRate_S
 from RetentionCustRate
 order by 1,2
 
---Yukarıda, aylara göre bir sonraki ayda tekrar alışveriş yapanların, tüm alışveriş yapanlara oranını "Yüzdelik" olarak buldum.
+--YukarÃ½da, aylara gÃ¶re bir sonraki ayda tekrar alÃ½Ã¾veriÃ¾ yapanlarÃ½n, tÃ¼m alÃ½Ã¾veriÃ¾ yapanlara oranÃ½nÃ½ "YÃ¼zdelik" olarak buldum.
